@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Adopta</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%231A47A0'/><path d='M5 12 Q5 4.5 12 4.5 Q19 4.5 19 12' stroke='white' stroke-width='2.4' stroke-linecap='round' fill='none'/><path d='M5 12 Q5 19.5 12 19.5 Q19 19.5 19 12' stroke='white' stroke-width='2.4' stroke-linecap='round' fill='none' opacity='.4'/><circle cx='12' cy='12' r='3.2' fill='white'/></svg>">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -71,6 +72,30 @@
   .reveal.in { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
+  /* ── ROTARY WORDS ── */
+  .hero-rotary {
+    /* sits inline in the h1 flow */
+    display: inline-grid; /* stacks all words in same cell */
+    vertical-align: baseline;
+    color: var(--accent2);
+    font-style: italic;
+  }
+  /* all words occupy the same grid cell so the container is as wide as the longest */
+  .rotary-word {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(.4em);
+    transition: opacity .38s ease, transform .38s ease;
+    pointer-events: none;
+  }
+  .rotary-word.active {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+  }
+  .rotary-word.exit {
+    opacity: 0; transform: translateY(-.4em);
+  }
+
   /* ── UTILS ── */
   .wrap {
     max-width: 1080px; margin: 0 auto;
@@ -121,6 +146,39 @@
   }
   .nav-cta:hover { background: var(--accent-hover) !important; }
 
+  /* ── HAMBURGER ── */
+  .nav-hamburger {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 36px; height: 36px; cursor: pointer; background: none; border: none; padding: 4px;
+  }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 2px; background: var(--fg);
+    border-radius: 2px; transition: all .2s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Mobile menu overlay */
+  .nav-mobile {
+    display: none; position: fixed; inset: 0; z-index: 49;
+    background: var(--bg); flex-direction: column;
+    padding-top: calc(env(safe-area-inset-top,0px) + 72px);
+    padding-left: max(24px, env(safe-area-inset-left,0px));
+    padding-right: max(24px, env(safe-area-inset-right,0px));
+    padding-bottom: 32px;
+  }
+  .nav-mobile.open { display: flex; }
+  .nav-mobile a {
+    font-size: 1.5rem; font-weight: 600; color: var(--fg); text-decoration: none;
+    padding: 16px 0; border-bottom: 1px solid var(--rule);
+  }
+  .nav-mobile a:last-child { border-bottom: none; margin-top: 16px; }
+  .nav-mobile .nav-cta-mobile {
+    display: inline-block; background: var(--accent) !important; color: #fff !important;
+    padding: 14px 28px; border-radius: 3px; text-align: center; border-bottom: none !important;
+  }
+
   /* ── HERO ── */
   .hero { padding-block: 88px 72px; border-bottom: 1px solid var(--rule); overflow: hidden; }
   .hero-layout { display: grid; grid-template-columns: 1fr 420px; gap: 60px; align-items: center; }
@@ -146,16 +204,32 @@
   .btn-ghost { background: transparent; color: var(--fg-mid); border: 1px solid var(--rule); }
   .btn-ghost:hover { color: var(--fg); border-color: var(--fg-muted); }
 
-  /* Hero visual: abstract EdTech card stack */
-  .hero-visual { position: relative; height: 320px; }
-  .hv-card {
-    position: absolute; border-radius: 10px; border: 1px solid var(--rule);
-    background: var(--card); box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  /* Hero visual: adoption dashboard */
+  .hero-visual {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 28px 28px 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.07);
+    display: flex; flex-direction: column; gap: 20px;
   }
-  .hv-main { width: 100%; height: 240px; top: 40px; left: 0; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
-  .hv-mini { width: 56%; height: 100px; top: 0; right: -16px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-  .hv-label { font-size: .68rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-muted); }
-  .hv-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--fg); line-height: 1.2; }
+  .hv-label { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-muted); }
+  .hv-title { font-family: var(--font-display); font-size: 1.05rem; color: var(--fg); line-height: 1.2; margin-top: 2px; }
+  .hv-divider { height: 1px; background: var(--rule); }
+  /* Metric rows */
+  .hv-metrics { display: flex; flex-direction: column; gap: 14px; }
+  .hv-metric { display: flex; flex-direction: column; gap: 5px; }
+  .hv-metric-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .hv-metric-name { font-size: .78rem; color: var(--fg-mid); font-weight: 500; }
+  .hv-metric-val { font-size: .78rem; font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .hv-track { height: 6px; background: var(--bg-alt); border-radius: 99px; overflow: hidden; }
+  .hv-fill { height: 100%; border-radius: 99px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(.4,0,.2,1); }
+  .hv-fill.go { transform: scaleX(1); }
+  .hv-fill--mid { background: var(--accent2); }
+  .hv-fill--low { background: var(--rule); }
+  /* Big stat */
+  .hv-stat-row { display: flex; gap: 16px; }
+  .hv-stat { flex: 1; background: var(--bg-alt); border-radius: 8px; padding: 14px 16px; }
+  .hv-stat-num { font-family: var(--font-display); font-size: 1.9rem; color: var(--accent); line-height: 1; }
+  .hv-stat-label { font-size: .72rem; color: var(--fg-muted); margin-top: 3px; line-height: 1.4; }
   .hv-bar-row { display: flex; flex-direction: column; gap: 7px; }
   .hv-bar-item { display: flex; align-items: center; gap: 8px; font-size: .72rem; color: var(--fg-mid); }
   .hv-bar-track { flex: 1; height: 5px; background: var(--bg-alt); border-radius: 3px; overflow: hidden; }
@@ -250,6 +324,76 @@
   .faq-a { display: none; padding: 0 24px 20px; font-size: .875rem; color: var(--fg-mid); line-height: 1.7; }
   .faq-item.open .faq-a { display: block; }
 
+  /* ── RECURSOS ── */
+  .recursos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 48px; }
+  .rec-card {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 6px;
+    padding: 32px 28px; display: flex; flex-direction: column; gap: 14px;
+    transition: box-shadow .2s, transform .2s; position: relative;
+  }
+  .rec-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.09); transform: translateY(-2px); }
+  .rec-card--featured { border-color: var(--accent); }
+  .rec-card--coming { opacity: .75; }
+  .rec-badge {
+    display: inline-block; font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 2px;
+    background: var(--accent-pale); color: var(--accent); align-self: flex-start;
+  }
+  .rec-badge--free { background: #E8F5E9; color: #2E7D32; }
+  .rec-badge--coming { background: var(--bg-alt); color: var(--fg-muted); }
+  .rec-price { font-family: var(--font-display); font-size: 1.5rem; color: var(--accent); line-height: 1; }
+  .rec-price small { font-family: var(--font-body); font-size: .78rem; color: var(--fg-muted); font-weight: 400; }
+  .rec-title { font-family: var(--font-display); font-size: 1.1rem; line-height: 1.25; }
+  .rec-desc { font-size: .84rem; color: var(--fg-mid); line-height: 1.65; flex: 1; }
+  .rec-cta { margin-top: auto; }
+  @media (max-width: 900px) { .recursos-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .recursos-grid { grid-template-columns: 1fr; } }
+
+  /* ── MODAL GUIA ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--card); border-radius: 10px; padding: 40px 36px;
+    max-width: 460px; width: 100%; position: relative;
+    box-shadow: 0 24px 64px rgba(0,0,0,.18);
+    animation: modalIn .22s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:translateY(16px) scale(.97) } to { opacity:1; transform:none } }
+  .modal-close {
+    position: absolute; top: 16px; right: 18px;
+    background: none; border: none; cursor: pointer; font-size: 1.3rem;
+    color: var(--fg-muted); line-height: 1; padding: 4px;
+  }
+  .modal-close:hover { color: var(--fg); }
+  .modal-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .modal-title { font-family: var(--font-display); font-size: 1.45rem; line-height: 1.25; margin: 0 0 10px; }
+  .modal-desc { font-size: .85rem; color: var(--fg-mid); line-height: 1.65; margin-bottom: 24px; }
+  .modal-form { display: flex; flex-direction: column; gap: 14px; }
+  .modal-input {
+    width: 100%; padding: 12px 16px; border: 1.5px solid var(--rule);
+    border-radius: 5px; background: var(--bg); color: var(--fg);
+    font-family: var(--font-body); font-size: .9rem;
+    box-sizing: border-box; transition: border-color .15s;
+    outline: none;
+  }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-submit {
+    padding: 13px 20px; background: var(--accent); color: #fff;
+    border: none; border-radius: 5px; font-family: var(--font-body);
+    font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .15s;
+  }
+  .modal-submit:hover { background: var(--accent-hover); }
+  .modal-submit:disabled { opacity: .6; cursor: not-allowed; }
+  .modal-note { font-size: .72rem; color: var(--fg-muted); text-align: center; }
+  .modal-success { text-align: center; padding: 12px 0; }
+  .modal-success-icon { font-size: 2.4rem; display: block; margin-bottom: 12px; }
+  .modal-success-title { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 8px; }
+  .modal-success-desc { font-size: .85rem; color: var(--fg-mid); line-height: 1.6; }
+
   /* ── CONTACTO ── */
   .contacto {
     background: var(--accent); padding-block: 80px;
@@ -288,9 +432,18 @@
     .hero { padding-block: 60px 48px; }
     section { padding-block: 60px; }
     .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
     .services-grid, .proceso-steps, .stats-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
     .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.18); }
+    .stat-item:last-child { border-bottom: none; }
+    .svc-card { padding: 24px 20px; }
+    .proceso-steps { gap: 0; }
+    .paso { padding: 20px 18px; }
+    .wrap { padding-left: max(16px, env(safe-area-inset-left,0px)); padding-right: max(16px, env(safe-area-inset-right,0px)); }
+    .wrap--narrow { padding-left: max(16px, env(safe-area-inset-left,0px)); padding-right: max(16px, env(safe-area-inset-right,0px)); }
+    .stats-band { padding-block: 28px; }
+    .stat-num { font-size: 2rem; }
   }
 </style>
 
@@ -305,11 +458,24 @@
     <ul class="nav-links">
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#diferencial">Por qué Adopta</a></li>
-      <li><a href="#quien">Quién soy</a></li>
+      <li><a href="#recursos">Recursos</a></li>
+      <li><a href="#quien">Sobre</a></li>
       <li><a href="#contacto" class="nav-cta">Hablamos</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE NAV OVERLAY -->
+<div class="nav-mobile" id="navMobile">
+  <a href="#servicios" onclick="closeMobileMenu()">Servicios</a>
+  <a href="#diferencial" onclick="closeMobileMenu()">Por qué Adopta</a>
+  <a href="#recursos" onclick="closeMobileMenu()">Recursos</a>
+  <a href="#quien" onclick="closeMobileMenu()">Sobre</a>
+  <a href="#contacto" class="nav-cta-mobile" onclick="closeMobileMenu()">Hablamos</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -317,53 +483,64 @@
     <div class="hero-layout">
       <div>
         <p class="hero-label reveal">Consultoría de adopción digital</p>
-        <h1 class="reveal" style="transition-delay:.08s">Acompañamos a tu equipo a adoptar la tecnología. <em>No solo a tenerla.</em></h1>
-        <p class="hero-sub reveal" style="transition-delay:.16s">La mayoría de organizaciones implantan herramientas digitales. Pocas consiguen que su gente las use de verdad. La diferencia está en entender cómo aprenden las personas.</p>
+        <h1 class="reveal" style="transition-delay:.08s">Acompañamos a tu equipo a <span class="hero-rotary" id="heroRotary"><span class="rotary-word active">usar Teams</span><span class="rotary-word">adoptar la IA</span><span class="rotary-word">cambiar hábitos</span><span class="rotary-word">aprender haciendo</span><span class="rotary-word">usar lo que tiene</span></span>. <em>De verdad.</em></h1>
+        <p class="hero-sub reveal" style="transition-delay:.16s">Muchos equipos estrenan herramientas digitales cada año. Pocos consiguen que su gente las use de verdad — y no es un problema de tecnología.</p>
+        <p class="hero-sub reveal" style="transition-delay:.20s; font-size:.88rem; color: var(--fg-muted); margin-top: -16px;">Trabajo con equipos de formación, coordinaciones y departamentos de L&D que ya tienen la tecnología.</p>
         <div class="hero-actions reveal" style="transition-delay:.24s">
           <a href="#contacto" class="btn btn-primary">Hablamos</a>
           <a href="#servicios" class="btn btn-ghost">Ver servicios</a>
         </div>
       </div>
-      <!-- Abstract EdTech visual card -->
-      <div class="hero-visual reveal" style="transition-delay:.18s">
-        <div class="hv-card hv-main">
-          <div>
-            <p class="hv-label">Sector formación · Equipo docente</p>
-            <p class="hv-title">Adopción de IA generativa</p>
+      <!-- Dashboard visual -->
+      <div class="hero-visual reveal" id="hvDash" style="transition-delay:.18s">
+        <div>
+          <p class="hv-label">Proyecto activo · Equipo L&amp;D</p>
+          <p class="hv-title">Adopción de IA generativa en centros educativos</p>
+        </div>
+        <div class="hv-divider"></div>
+        <div class="hv-metrics">
+          <div class="hv-metric">
+            <div class="hv-metric-header">
+              <span class="hv-metric-name">Diagnóstico inicial</span>
+              <span class="hv-metric-val">100%</span>
+            </div>
+            <div class="hv-track"><div class="hv-fill" style="transition-delay:.2s" data-w="1"></div></div>
           </div>
-          <div class="hv-bar-row">
-            <div class="hv-bar-item">
-              <span style="width:80px;flex-shrink:0">Diagnóstico</span>
-              <div class="hv-bar-track"><div class="hv-bar-fill" style="width:100%"></div></div>
-              <span>✓</span>
+          <div class="hv-metric">
+            <div class="hv-metric-header">
+              <span class="hv-metric-name">Programa formativo</span>
+              <span class="hv-metric-val">100%</span>
             </div>
-            <div class="hv-bar-item">
-              <span style="width:80px;flex-shrink:0">Diseño</span>
-              <div class="hv-bar-track"><div class="hv-bar-fill" style="width:100%"></div></div>
-              <span>✓</span>
-            </div>
-            <div class="hv-bar-item">
-              <span style="width:80px;flex-shrink:0">Implementación</span>
-              <div class="hv-bar-track"><div class="hv-bar-fill" style="width:68%"></div></div>
-              <span>68%</span>
-            </div>
-            <div class="hv-bar-item">
-              <span style="width:80px;flex-shrink:0">Seguimiento</span>
-              <div class="hv-bar-track"><div class="hv-bar-fill" style="width:0%"></div></div>
-              <span style="color:var(--fg-muted)">—</span>
-            </div>
+            <div class="hv-track"><div class="hv-fill" style="transition-delay:.35s" data-w="1"></div></div>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <span class="hv-pill">9 docentes</span>
-            <span class="hv-pill">Semana 3 / 5</span>
-            <span class="hv-pill" style="background:rgba(42,107,232,.12)">En progreso</span>
+          <div class="hv-metric">
+            <div class="hv-metric-header">
+              <span class="hv-metric-name">Implementación</span>
+              <span class="hv-metric-val">68%</span>
+            </div>
+            <div class="hv-track"><div class="hv-fill hv-fill--mid" style="transition-delay:.5s" data-w=".68"></div></div>
+          </div>
+          <div class="hv-metric">
+            <div class="hv-metric-header">
+              <span class="hv-metric-name">Seguimiento continuo</span>
+              <span class="hv-metric-val" style="color:var(--fg-muted)">Pendiente</span>
+            </div>
+            <div class="hv-track"><div class="hv-fill hv-fill--low" style="transition-delay:.65s" data-w=".08"></div></div>
           </div>
         </div>
-        <div class="hv-card hv-mini" style="top:auto;bottom:0;right:-16px">
-          <p class="hv-label">Adopción real</p>
-          <div>
-            <p class="hv-num">79%</p>
-            <p class="hv-num-label">uso activo a 90 días</p>
+        <div class="hv-divider"></div>
+        <div class="hv-stat-row">
+          <div class="hv-stat">
+            <p class="hv-stat-num">79%</p>
+            <p class="hv-stat-label">uso activo a 90 días</p>
+          </div>
+          <div class="hv-stat">
+            <p class="hv-stat-num">+3h</p>
+            <p class="hv-stat-label">ahorro semanal por docente</p>
+          </div>
+          <div class="hv-stat">
+            <p class="hv-stat-num">9</p>
+            <p class="hv-stat-label">personas en el equipo</p>
           </div>
         </div>
       </div>
@@ -438,6 +615,10 @@
         <div class="svc-tags"><span class="tag">EdTech</span><span class="tag">Escuelas de negocio</span><span class="tag">L&amp;D</span></div>
       </div>
     </div>
+    <div class="reveal" style="margin-top:40px;text-align:center;transition-delay:.3s">
+      <a href="#contacto" class="btn btn-primary" style="margin-right:10px">Hablamos de tu caso</a>
+      <a href="#proceso" class="btn btn-ghost">Cómo trabajo</a>
+    </div>
   </div>
 </section>
 
@@ -456,17 +637,6 @@
         </div>
       </div>
       <div class="dif-points">
-        <div class="dif-point reveal">
-          <div class="dp-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div>
-            <strong>He estado al otro lado</strong>
-            <p>Más de 10 años coordinando proyectos formativos. Sé por qué falla la adopción desde dentro.</p>
-          </div>
-        </div>
         <div class="dif-point reveal" style="transition-delay:.08s">
           <div class="dp-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -501,6 +671,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="reveal" style="margin-top:40px;text-align:center;transition-delay:.32s">
+      <a href="#contacto" class="btn btn-primary">Quiero saber si esto es para mí</a>
     </div>
   </div>
 </section>
@@ -544,10 +717,13 @@
   <div class="wrap">
     <div class="quien-layout">
       <div class="quien-text">
-        <p class="section-eyebrow reveal">Quién hay detrás</p>
+        <p class="section-eyebrow reveal">Sobre</p>
         <h2 class="section-title reveal" style="transition-delay:.06s">Alba Canas</h2>
-        <p class="reveal" style="transition-delay:.12s">Consultora especializada en aprendizaje digital e IA aplicada. Creé Adopta porque los proyectos de transformación digital suelen tener muy buena tecnología y muy poca pedagogía.</p>
-        <p class="reveal" style="transition-delay:.18s">Eso es exactamente lo que cambio.</p>
+        <p class="reveal" style="transition-delay:.12s">Consultora especializada en adopción digital y aprendizaje aplicado a la IA. Más de 10 años diseñando e implantando proyectos de formación digital para equipos reales. Creé Adopta porque la mayoría de proyectos de transformación digital tienen muy buena tecnología y muy poca pedagogía.</p>
+        <p class="reveal" style="transition-delay:.18s">Especialización en Tecnologías de la Información y Comunicación (UOC) y en Project Management e IA Empresarial. Certificaciones Microsoft en IA para entornos de trabajo. Una combinación poco común que me permite hablar tanto con el equipo IT como con el formador de aula.</p>
+        <div class="reveal" style="transition-delay:.24s;margin-top:24px">
+          <a href="#contacto" class="btn btn-primary">Hablemos</a>
+        </div>
         <div class="reveal ms-badges" style="transition-delay:.26s">
           <svg width="14" height="14" viewBox="0 0 21 21" style="flex-shrink:0"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
           <span class="ms-badge-label">Certificado por Microsoft Learn</span>
@@ -613,6 +789,44 @@
   </div>
 </section>
 
+<hr class="divider">
+
+<!-- RECURSOS -->
+<section id="recursos">
+  <div class="wrap">
+    <p class="section-eyebrow reveal">Recursos</p>
+    <h2 class="section-title reveal" style="transition-delay:.06s">Aprende antes de decidir</h2>
+    <p class="section-intro reveal" style="transition-delay:.10s">Materiales prácticos para equipos y direcciones que quieren entender la adopción digital antes de contratar nada.</p>
+    <div class="recursos-grid">
+      <div class="rec-card reveal">
+        <span class="rec-badge rec-badge--free">Gratis</span>
+        <div class="rec-title">Guía: Por qué falla la adopción digital en tu equipo</div>
+        <p class="rec-desc">Los 5 errores más habituales en proyectos de transformación digital. Con ejemplos reales y un checklist para identificar dónde está el bloqueo en tu organización.</p>
+        <div class="rec-cta">
+          <a href="https://adopta.digital/guia.pdf" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:.84rem;padding:9px 18px">Descargar gratis</a>
+        </div>
+      </div>
+      <div class="rec-card rec-card--featured reveal" style="transition-delay:.1s">
+        <span class="rec-badge">Cápsula formativa</span>
+        <div class="rec-price">67€ <small>/ acceso individual</small></div>
+        <div class="rec-title">IA aplicada a la gestión educativa</div>
+        <p class="rec-desc">Para directores y coordinadores de centros educativos. Qué herramientas de IA existen para la gestión administrativa, cómo evaluarlas y cómo implantarlas sin fricciones con el equipo docente. Sin código. Sin tecnicismos.</p>
+        <div class="rec-cta">
+          <a href="#contacto" class="btn btn-primary" style="font-size:.84rem;padding:9px 18px">Acceder a la cápsula</a>
+        </div>
+      </div>
+      <div class="rec-card rec-card--coming reveal" style="transition-delay:.2s">
+        <span class="rec-badge rec-badge--coming">Próximamente</span>
+        <div class="rec-title">Kit de diagnosi digital para L&amp;D</div>
+        <p class="rec-desc">Plantillas, encuestas y un framework de evaluación para medir el nivel de adopción real de las herramientas digitales en tu equipo. Lista de espera abierta.</p>
+        <div class="rec-cta">
+          <a href="#contacto" class="btn btn-ghost" style="font-size:.84rem;padding:9px 18px;opacity:.7">Apuntarse a la lista</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACTO -->
 <section class="contacto" id="contacto">
   <div class="contacto-layout">
@@ -668,6 +882,69 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+  // ── Hero dashboard bars animate on reveal
+  (function() {
+    const dash = document.getElementById('hvDash');
+    if (!dash) return;
+    const barIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        dash.querySelectorAll('.hv-fill').forEach(fill => {
+          fill.classList.add('go');
+          fill.style.transform = 'scaleX(' + (fill.dataset.w || 1) + ')';
+        });
+        barIO.unobserve(e.target);
+      });
+    }, { threshold: 0.4 });
+    barIO.observe(dash);
+  })();
+
+  // ── Rotary words in hero (inline-grid approach — no measurement needed)
+  (function() {
+    const container = document.getElementById('heroRotary');
+    if (!container) return;
+    const words = Array.from(container.querySelectorAll('.rotary-word'));
+    let cur = 0;
+    function next() {
+      const prev = cur;
+      cur = (cur + 1) % words.length;
+      words[prev].classList.remove('active');
+      words[prev].classList.add('exit');
+      words[cur].classList.add('active');
+      setTimeout(() => words[prev].classList.remove('exit'), 400);
+    }
+    setInterval(next, 2400);
+  })();
+
+  // ── Animated counters on stats band
+  function animateCount(el, target, suffix, duration) {
+    const start = performance.now();
+    const isDecimal = target !== Math.floor(target);
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val = isDecimal ? (target * ease).toFixed(1) : Math.round(target * ease);
+      el.textContent = suffix.startsWith('+') ? '+' + val : val + suffix.replace('+','');
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = suffix.startsWith('+') ? '+' + target : target + suffix.replace('+','');
+    }
+    requestAnimationFrame(step);
+  }
+
+  const statIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const raw = el.textContent.trim();
+      const plus = raw.startsWith('+');
+      const pct  = raw.endsWith('%');
+      const num  = parseFloat(raw.replace(/[^0-9.]/g,''));
+      if (!isNaN(num)) animateCount(el, num, plus ? '+' : (pct ? '%' : ''), 1200);
+      statIO.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.stat-num').forEach(el => statIO.observe(el));
+
   document.querySelectorAll('.faq-q').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
@@ -676,6 +953,22 @@
       if (!isOpen) { item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
     });
   });
+
+  // Hamburger menu
+  const hamburger = document.getElementById('navHamburger');
+  const mobileNav = document.getElementById('navMobile');
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileNav.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  window.closeMobileMenu = function() {
+    mobileNav.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
 
   document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -691,3 +984,74 @@
       .catch(() => alert('Hi ha hagut un error. Prova de nou o escriu directament a albacanas.est@gmail.com'));
   });
 </script>
+
+<!-- MODAL GUIA -->
+<div class="modal-overlay" id="guiaModal" role="dialog" aria-modal="true" aria-labelledby="guiaModalTitle">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeGuiaModal()" aria-label="Cerrar">×</button>
+    <div id="guiaModalContent">
+      <p class="modal-eyebrow">Descarga gratuita</p>
+      <h2 class="modal-title" id="guiaModalTitle">Por qué falla la adopción digital en tu equipo</h2>
+      <p class="modal-desc">Deja tu email y te mando la guía directamente. Sin spam, solo contenido que vale.</p>
+      <form class="modal-form" id="guiaForm">
+        <input type="hidden" name="origen" value="guia-pdf">
+        <input class="modal-input" type="email" name="email" id="guiaEmail" placeholder="tu@email.com" required autocomplete="email">
+        <button class="modal-submit" type="submit" id="guiaSubmitBtn">Enviarme la guía</button>
+        <p class="modal-note">Sin spam. Puedes darte de baja cuando quieras.</p>
+      </form>
+    </div>
+    <div id="guiaModalSuccess" class="modal-success" style="display:none">
+      <span class="modal-success-icon">✉️</span>
+      <p class="modal-success-title">¡Listo! Revisa tu bandeja de entrada</p>
+      <p class="modal-success-desc">Te he enviado la guía. Si no la ves en unos minutos, mira en spam.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openGuiaModal() {
+    document.getElementById('guiaModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('guiaEmail').focus(), 50);
+  }
+  function closeGuiaModal() {
+    document.getElementById('guiaModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('guiaModal').addEventListener('click', function(e) {
+    if (e.target === this) closeGuiaModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeGuiaModal();
+  });
+
+  document.getElementById('guiaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('guiaSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    const data = new FormData(this);
+    fetch('https://formspree.io/f/xvkagqpz', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(r => {
+      if (r.ok) {
+        document.getElementById('guiaModalContent').style.display = 'none';
+        document.getElementById('guiaModalSuccess').style.display = 'block';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Enviarme la guía';
+        alert('Ha habido un error. Prueba de nuevo o escríbeme directamente.');
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Enviarme la guía';
+      alert('Ha habido un error. Prueba de nuevo o escríbeme directamente.');
+    });
+  });
+</script>
+
+</body></html>
