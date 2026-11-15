@@ -1,6 +1,9 @@
 {
-  "cleanUrls": false,
+  "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/curso", "destination": "/curso.html" }
+  ],
   "headers": [
     {
       "source": "/guia.pdf",
